@@ -1,89 +1,48 @@
-# Tic-Tac-Toe with Minimax and Alpha-Beta Pruning
+# Tic-Tac-Toe with Minimax + Alpha-Beta Pruning
 
-## Overview
+Tic-Tac-Toe solved with plain minimax and with alpha-beta pruning, with a node-count
+comparison on identical positions and a demo of which branches get pruned and why.
 
-This project implements an intelligent Tic-Tac-Toe agent using the **Minimax algorithm** with **Alpha-Beta pruning**.
+Pure Python 3.8+, no dependencies.
 
-The project compares plain Minimax and Alpha-Beta Minimax on the **same board position** and measures the number of nodes explored by each algorithm.
-
-## Features
-
-* Tic-Tac-Toe game state evaluation
-* Plain Minimax algorithm
-* Minimax with Alpha-Beta pruning
-* Node-count comparison
-* Pruned branch demonstration
-* Verification that pruning does not change the final result
-
-## Algorithms
-
-### Minimax
-
-Minimax explores possible game states and selects the optimal game value.
-
-* `+1` → X wins
-* `0` → Draw
-* `-1` → O wins
-
-### Alpha-Beta Pruning
-
-Alpha-Beta pruning improves Minimax by avoiding branches that cannot affect the final decision.
-
-Pruning occurs when:
-
-```text
-alpha >= beta
-```
-
-The program displays the pruned branch and the Alpha-Beta values that caused the pruning.
-
-## Node Count Comparison
-
-Both algorithms are executed using the same Tic-Tac-Toe board position.
-
-The program displays:
-
-* Plain Minimax result
-* Plain Minimax node count
-* Alpha-Beta result
-* Alpha-Beta node count
-* Number of nodes saved
-* Pruned branches
-* Whether both results are unchanged
-
-## Example Board
-
-```text
-X | O | X
----------
-_ | X | O
----------
-O | _ | _
-```
-
-## How to Run
-
-Make sure Python 3 is installed.
-
-Run:
+## Run
 
 ```bash
-python tic_tac_toe.py
+python compare.py        # node-count comparison + exhaustive equivalence check
+python demo_pruning.py   # shows pruned branches and the reason for each
+python demo_pruning.py "X../.O./..X"   # try any position (X/O/. , '/' optional)
+python play.py           # play against the alpha-beta AI
+python -m unittest discover -s tests -t .   # tests (~5s)
 ```
 
-## Project Structure
+## Results
 
-```text
-tic-tac-toe-alpha-beta/
-│
-├── tic_tac_toe.py
-├── README.md
-└── LICENSE
+| Position              | Minimax | Alpha-Beta | Saved |
+|-----------------------|--------:|-----------:|------:|
+| Empty board           | 549,946 |     20,866 | 96.2% |
+| X center (O to move)  |  55,505 |      2,459 | 95.6% |
+| X corner (O to move)  |  59,705 |      2,788 | 95.3% |
+| Mid-game (X to move)  |     182 |         97 | 46.7% |
+| Mid-game (O to move)  |   1,053 |        356 | 66.2% |
+| Late-game (X to move) |       8 |          6 | 25.0% |
+
+Across all 5,478 reachable positions: 2,126,493 vs 310,611 nodes (85.4% fewer), **0 mismatches**.
+
+## Why pruning never changes the result
+
+alpha = best value MAX can already guarantee; beta = best value MIN can already guarantee.
+When alpha >= beta at a node, the opponent above already has a better alternative, so it will
+never choose this node. Unexplored siblings could only push this node's value further in the
+direction its parent already rejects, so the parent's max/min picks the same child.
+`demo_pruning.py` prints each cutoff with its alpha/beta window and number of skipped nodes,
+and asserts both algorithms return the same move and value.
+
+## Layout
+
 ```
-
-## Conclusion
-
-The project demonstrates that Alpha-Beta pruning can reduce unnecessary node exploration while preserving the Minimax game value.
-
-The pruned branches cannot affect the final decision because of the Alpha-Beta bounds.
-
+ttt/engine.py            minimax, alpha-beta, stats, prune trace
+compare.py               node-count comparison
+demo_pruning.py          pruned-branch demonstration
+play.py                  interactive game
+tests/test_equivalence.py
+```
