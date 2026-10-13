@@ -24,6 +24,15 @@ _____|_____|_____
 - Show which branches are pruned and why.
 - Verify that both algorithms give the same optimal score.
 
+  1. Minimax searches possible moves and selects the best outcome. The maximizing player tries to obtain the highest score, while the minimizing player tries to obtain the lowest score.
+
+  
+2. Alpha-Beta Pruning
+Alpha-Beta Pruning improves Minimax by skipping branches that cannot affect the final decision.
+Alpha: Best score currently guaranteed for the maximizing player.
+Beta: Best score currently guaranteed for the minimizing player.
+Pruning condition: When alpha >= beta, the remaining branches at that node can be skipped.
+
 ⚙️ Technologies
 
 - Python
